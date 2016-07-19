@@ -33,16 +33,17 @@ using namespace std;
 static void
 listener_read_cb(evutil_socket_t fd, short what, void *p)
 {
-	sockaddr_in * serveraddr = (sockaddr_in *)p;
+	sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(sockaddr_in));
 	size_t addrlen = sizeof(sockaddr_in);
-	int acceptres = accept(fd, (sockaddr *)serveraddr, (int *)&addrlen);
+	int acceptres = accept(fd, (sockaddr *)&serveraddr, (int *)&addrlen);
 	if(acceptres == -1)
 	{
-		int errorNum = WSAGetLastError();
-		cout << "accept error!!!" <<errorNum<<endl;
+		/*int errorNum = WSAGetLastError();
+		cout << "accept error!!!" <<errorNum<<endl;*/
 	}
-
-
+	event_base * eventbase =(event_base *) p;
+	bufferevent_socket_new(eventbase,  fd, BEV_OPT_CLOSE_ON_FREE);
 }
 
 
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 
 	listen(listenfd, 6);
 
-	event* listenevent = event_new(myevent_base, listenfd, EV_READ|EV_PERSIST, listener_read_cb,&listenAddr);
+	event* listenevent = event_new(myevent_base, listenfd, EV_READ|EV_PERSIST, listener_read_cb,myevent_base);
 	event_add(listenevent, NULL);
 	event_base_dispatch(myevent_base);
 
