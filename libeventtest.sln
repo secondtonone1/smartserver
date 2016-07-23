@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeventtest", "libeventtest\libeventtest.vcproj", "{17EA11C3-4026-448C-93C8-1A92F28C0BCB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartserver", "smartserverprj\libeventtest.vcproj", "{17EA11C3-4026-448C-93C8-1A92F28C0BCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
