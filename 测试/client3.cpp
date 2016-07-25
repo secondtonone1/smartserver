@@ -8,6 +8,10 @@
 #define BUFFLEN 1024
 #define SERVER_PORT 9995
 
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 #include <iostream>
 using namespace std;
 
@@ -17,13 +21,9 @@ struct PacketHead
 	int packetLen;
 };
 
-
-int main(int argc, char * argv[])
+void *create(void *arg)
 {
-
-	for(int i = 0; i < 10000; i++)
-	{
-		int s;
+    int s;
 
 	char buff[BUFFLEN];
 
@@ -53,6 +53,7 @@ int main(int argc, char * argv[])
 	if(conRes < 0)
 	{
 		cout << "connect error !!" << endl;
+		cout << "errorno is :  " << errno << endl;
 		return 0;
 	}
 
@@ -90,14 +91,40 @@ int main(int argc, char * argv[])
 	cout << "msg len is: " << strlen(msg2) << endl;
 	int sendLen2 = send(s, sendData2, sizeof(packetHead) + strlen(msg2), 0);
 	cout << "send data len 2: " << sendLen2 << endl;
+	
 
+	
+	return NULL;
+}
+
+
+	
+int main(int argc, char * argv[])
+{
+
+	//Linux一个进程最多开辟1024线程
+	for(int i = 0; i < 1000; i++)
+	{
+		pthread_t tid;
+		int error = pthread_create(&tid, NULL, create, NULL);
+		if(error!=0)
+		{
+			printf("pthread_create is created is not created ... ");
+			return -1;
+		}
+		
+		sleep(1);
+		//pthread_join(tid, NULL);
+	}
+	
+	
 	
 	
 	//cout << "send data is : " << sendData2 << endl;
    
-	close(s);
-		
-	}
+	
+	getchar();
+	
 	
 
 	return 0;	

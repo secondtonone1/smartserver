@@ -100,7 +100,7 @@ bool NetWorkSystem::initial()
 
 
 
-	listen(m_nListenfd, 6);
+	listen(m_nListenfd, 128);
 
 
 	m_pListenevent = event_new(m_pEvent_base, m_nListenfd, EV_READ|EV_PERSIST, NetWorkSystem::listener_read_cb,m_pEvent_base);

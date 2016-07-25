@@ -6,6 +6,8 @@
 #include "tcphandler.h"
 #include <map>
 using namespace std;
+//由于使用libevent库通讯，libevent底层epoll最大事件设置为4096，可根据需求自己更改数量
+//libevent底层select没有限制最大事件数，epoll和select都有对应的扩容逻辑
 class NetWorkSystem : public Singleton<NetWorkSystem>
 {
 public:

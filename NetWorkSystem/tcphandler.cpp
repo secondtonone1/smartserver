@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "tcphandler.h"
+//static int readtimes = 0;
 //处理读事件
 void TcpHandler::dealReadEvent()
 {
@@ -59,6 +60,7 @@ void TcpHandler::tcpRead(UInt32 &inputLen)
 	{
 		m_pLastNode->m_pMsg[m_pLastNode->m_nMsgLen + 1] = '\0'; 
 		cout << "receive msg is : " << m_pLastNode->m_pMsg << endl;
+		//cout <<"read times is :  " << ++readtimes<< endl;
 	}
 
 }
