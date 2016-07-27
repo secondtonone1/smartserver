@@ -16,11 +16,11 @@
 #include <sys/socket.h>
 #endif
 
-#include "event2/bufferevent.h"
-#include "event2/buffer.h"
-#include "event2/listener.h"
-#include "event2/util.h"
-#include "event2/event.h"
+#include "./Include/libevent/event2/bufferevent.h"
+#include "./Include/libevent/event2/buffer.h"
+#include "./Include/libevent/event2/listener.h"
+#include "./Include/libevent/event2/util.h"
+#include "./Include/libevent/event2/event.h"
 
 #include <WinSock2.h>
 #include <string.h>

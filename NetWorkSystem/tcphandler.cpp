@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include "tcphandler.h"
 //static int readtimes = 0;
 //处理读事件

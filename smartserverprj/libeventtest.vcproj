@@ -41,12 +41,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Include;..\NetWorkSystem;..\"
+				AdditionalIncludeDirectories="..\Include;..\NetWorkSystem;..\;..\Include\libevent;..\Include\src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CompileAs="2"
@@ -220,6 +220,18 @@
 				</File>
 				<File
 					RelativePath="..\NetWorkSystem\tcphandler.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ProtoBuf"
+				>
+				<File
+					RelativePath="..\ProtoBuf\smart.msg.pb.cc"
+					>
+				</File>
+				<File
+					RelativePath="..\ProtoBuf\smart.msg.pb.h"
 					>
 				</File>
 			</Filter>

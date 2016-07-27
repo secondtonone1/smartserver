@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "networksystem.h"
 
 #ifdef _linux_
