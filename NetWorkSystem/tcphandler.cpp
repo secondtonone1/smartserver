@@ -42,6 +42,17 @@ void TcpHandler::dealReadEvent()
 		tcpRead(inputLen);
 	}
 
+	
+}
+
+list<MsgNode *> * TcpHandler::getListMsgs(void)
+{
+	return &m_listMsgs;
+}
+
+const UInt64 &TcpHandler::getConnId(void)
+{
+	return m_nConnId;
 }
 
 void TcpHandler::tcpRead(UInt32 &inputLen)
@@ -64,6 +75,22 @@ void TcpHandler::tcpRead(UInt32 &inputLen)
 
 }
 
+void TcpHandler::tcpSend(UInt32 msgId, UInt32 msgLen, char * msg)
+{
+
+}
+
+bool MsgNode::isReceived()
+{
+	if(m_nOffSet >= m_nMsgLen)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 bool TcpHandler::insertNode(UInt32 msgId, UInt32 msgLen)
 {

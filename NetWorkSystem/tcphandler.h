@@ -21,6 +21,44 @@ class MsgNode
 			 m_nOffSet = 0;
 			 m_nMsgLen = msgLen;
 			 m_nMsgId = msgId;
+			 memset(m_pMsg, 0, m_nMsgLen+1);
+		}
+
+		MsgNode(const MsgNode & msgNode)
+		{
+			m_pMsg=(char *)malloc(sizeof(char) *(msgNode.m_nMsgLen +1));
+			if(!m_pMsg)
+			{
+				cout << "malloc error !!!" <<endl;
+				return;
+			}
+			m_nOffSet = msgNode.m_nOffSet;
+			m_nMsgLen = msgNode.m_nMsgLen;
+			m_nMsgId = msgNode.m_nMsgId;
+			memcpy(m_pMsg, msgNode.m_pMsg, msgNode.m_nMsgLen);
+			m_pMsg[msgNode.m_nMsgLen] = '\0';
+		}
+
+		MsgNode & operator = (const MsgNode & msgNode)
+		{
+			if(m_pMsg)
+			{
+				delete m_pMsg;
+			}
+
+			m_pMsg = (char *)malloc(sizeof(char) *(msgNode.m_nMsgLen +1));
+			if(!m_pMsg)
+			{
+				cout << "malloc error !!!" <<endl;
+				return *this;
+			}
+
+			m_nOffSet = msgNode.m_nOffSet;
+			m_nMsgLen = msgNode.m_nMsgLen;
+			m_nMsgId = msgNode.m_nMsgId;
+			memcpy(m_pMsg, msgNode.m_pMsg, msgNode.m_nMsgLen);
+			m_pMsg[msgNode.m_nMsgLen] = '\0';
+
 		}
 
 		~MsgNode(){
@@ -35,6 +73,7 @@ class MsgNode
 			}
 		}
 
+		bool isReceived();
 		
 	private:
 		//消息长度
@@ -95,13 +134,39 @@ public:
 		m_pBufferevent = pBufferevent;
 	}
 
+	const UInt64 &getConnId(void);
 
 	void dealReadEvent();
 
+	list<MsgNode *> * getListMsgs(void);
+
+private:
+	//考虑到禁止copy构造函数和=运算符
+	//保证一个bufferevent只有一个TcpHandler管理
+	TcpHandler & operator = (const TcpHandler & tcpHandler)
+	{
+		m_pBufferevent = tcpHandler.m_pBufferevent;
+		m_nConnId = tcpHandler.m_nConnId;
+		m_pLastNode = tcpHandler.m_pLastNode;
+		m_listMsgs = tcpHandler.m_listMsgs;
+
+		return *this;
+	}
+
+	TcpHandler(const TcpHandler & tcpHandler)
+	{
+		m_pBufferevent = tcpHandler.m_pBufferevent;
+		m_nConnId = tcpHandler.m_nConnId;
+		m_pLastNode = tcpHandler.m_pLastNode;
+		m_listMsgs = tcpHandler.m_listMsgs;
+	}
+
 private:
 	void tcpRead(UInt32 &inputLen);
+	void tcpSend(UInt32 msgId, UInt32 msgLen, char * msg);
 	
 	bool insertNode(UInt32 msgId, UInt32 msgLen);
+
 	UInt64 m_nConnId;
 	bufferevent* m_pBufferevent;
 	list<MsgNode *> m_listMsgs;

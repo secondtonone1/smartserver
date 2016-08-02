@@ -176,6 +176,22 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\basethread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\basethread.h"
+				>
+			</File>
+			<File
+				RelativePath="..\CLock.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\CLock.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -206,6 +222,14 @@
 			<Filter
 				Name="NetWorkSystem"
 				>
+				<File
+					RelativePath="..\NetWorkSystem\networker.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\NetWorkSystem\networker.h"
+					>
+				</File>
 				<File
 					RelativePath="..\NetWorkSystem\networksystem.cpp"
 					>

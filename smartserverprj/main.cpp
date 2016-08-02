@@ -9,6 +9,9 @@
 #include"../NetWorkSystem/networksystem.h"
 #include <fstream>
 #include "../ProtoBuf/smart.msg.pb.h"
+#include "../basethread.h"
+#include "../NetWorkSystem/networker.h"
+
 #pragma comment(lib, "libprotobuf.lib")  
 #pragma comment(lib, "libprotoc.lib")
 

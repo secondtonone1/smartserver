@@ -12,6 +12,32 @@
 #endif
 
 
+NetWorkSystem::NetWorkSystem(){
+
+	m_nListenfd = 0;
+	m_pEvent_base = 0;
+	m_nConnId = 0;
+	for(int i = 0; i < 2; i++)
+	{
+		m_pNetWorkers[i] = new NetWorker();	
+		m_pNetWorkers[i]->startup();
+	}
+}
+
+NetWorkSystem::~NetWorkSystem()
+{
+	m_nListenfd = 0;
+	m_pEvent_base = 0;
+	m_nConnId = 0;
+	for(int i = 0; i < 2; i++)
+	{
+		delete m_pNetWorkers[i];
+		m_pNetWorkers[i] = NULL;
+	}
+
+
+}
+
 void NetWorkSystem::tcpread_cb(struct bufferevent *bev, void *ctx)
 {
 	getSingleton().dealReadEvent(bev, ctx);
@@ -26,7 +52,12 @@ void NetWorkSystem::dealReadEvent(struct bufferevent *bev, void *ctx)
 	if(tcpHandlerIter != m_mapTcpHandlers.end())
 	{
 		tcpHandlerIter->second->dealReadEvent();
+		//调用应用层消息处理
+		const UInt64 &connId  =  tcpHandlerIter->second->getConnId();
+		m_pNetWorkers[connId%2]->pushNodeInStream(tcpHandlerIter->second);
 	}
+
+	
 }
 
 void
@@ -58,12 +89,25 @@ NetWorkSystem::listener_read_cb(evutil_socket_t fd, short what, void *p)
 
 void NetWorkSystem::tcpwrite_cb(struct bufferevent *bev, void *ctx)
 {
-
+	
 }
 
+//出现连接错误的时候要清除数据，释放tcphandler
 void NetWorkSystem::tcperror_cb(struct bufferevent *bev, short what, void *ctx)
 {
+	
+	getSingleton().eraseConnection(bev);
+}
 
+void NetWorkSystem::eraseConnection( bufferevent * bev)
+{
+	evutil_socket_t  bufferfd = bufferevent_getfd(bev);
+	std::map<evutil_socket_t, TcpHandler *>::iterator tcpHandlerIter = m_mapTcpHandlers.find(bufferfd);
+	if(tcpHandlerIter != m_mapTcpHandlers.end())
+	{
+		delete(tcpHandlerIter->second);
+		m_mapTcpHandlers.erase(tcpHandlerIter);	
+	}
 }
 
 
