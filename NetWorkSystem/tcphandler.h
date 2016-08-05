@@ -58,7 +58,7 @@ class MsgNode
 			m_nMsgId = msgNode.m_nMsgId;
 			memcpy(m_pMsg, msgNode.m_pMsg, msgNode.m_nMsgLen);
 			m_pMsg[msgNode.m_nMsgLen] = '\0';
-
+			return * this;
 		}
 
 		~MsgNode(){
@@ -74,7 +74,8 @@ class MsgNode
 		}
 
 		bool isReceived();
-		
+		UInt32 getMsgId()const{return m_nMsgId;}
+		std::string getMsgData() const{return std::string(m_pMsg) ;}
 	private:
 		//消息长度
 		UInt32 m_nMsgLen;

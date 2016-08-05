@@ -66,12 +66,12 @@ void TcpHandler::tcpRead(UInt32 &inputLen)
 	//更改偏移标记
 	m_pLastNode->m_nOffSet += readLen;
 	//判断读完
-	if(m_pLastNode->m_nOffSet >= m_pLastNode->m_nMsgLen)
-	{
-		m_pLastNode->m_pMsg[m_pLastNode->m_nMsgLen + 1] = '\0'; 
-		cout << "receive msg is : " << m_pLastNode->m_pMsg << endl;
-		//cout <<"read times is :  " << ++readtimes<< endl;
-	}
+	//if(m_pLastNode->m_nOffSet >= m_pLastNode->m_nMsgLen)
+	//{
+	//	m_pLastNode->m_pMsg[m_pLastNode->m_nMsgLen + 1] = '\0'; 
+	//	cout << "receive msg is : " << m_pLastNode->m_pMsg << endl;
+	//	//cout <<"read times is :  " << ++readtimes<< endl;
+	//}
 
 }
 

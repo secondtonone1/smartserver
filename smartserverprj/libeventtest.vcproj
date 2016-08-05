@@ -223,6 +223,14 @@
 				Name="NetWorkSystem"
 				>
 				<File
+					RelativePath="..\NetWorkSystem\msghandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\NetWorkSystem\msghandler.h"
+					>
+				</File>
+				<File
 					RelativePath="..\NetWorkSystem\networker.cpp"
 					>
 				</File>
@@ -256,6 +264,30 @@
 				</File>
 				<File
 					RelativePath="..\ProtoBuf\smart.msg.pb.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Msg"
+				>
+				<File
+					RelativePath="..\Msg\msgid.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Msg\testmsg.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MsgHandler"
+				>
+				<File
+					RelativePath="..\MsgHandler\testmsghandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\MsgHandler\testmsghandler.h"
 					>
 				</File>
 			</Filter>

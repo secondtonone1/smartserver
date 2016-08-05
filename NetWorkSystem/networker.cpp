@@ -6,15 +6,24 @@ void NetWorker::threadWorkFunc(void )
 	{
 		
 		const MsgStream & msgStream = popMsgFromInStream();
-		if(msgStream.getCount() == 0)
+		UInt32 count = msgStream.getCount();
+		if(count == 0)
 		{
 			#if defined _WIN32
+				cout << "msg count == 0!" <<endl;
 				Sleep(2000);
+				continue;
 			#endif
 		}
 	
-		//反序列化处理消息
-
+		//调用消息处理的而回调函数，并且在回调函数内部反序列化
+		
+	
+		for(UInt32 i = 0; i < count; i++)
+		{
+			ConMsgNode & msgNode = m_msgInStream.popMsgFromList();
+			m_msgHandler.handleMsg(msgNode);
+		}
 		
 	}
 }
@@ -88,5 +97,5 @@ MsgStream  NetWorker::popMsgFromInStream()
 		msgStream.insertMsgToList(msgNode);
 	}
 
-	return m_msgInStream;
+	return msgStream;
 }

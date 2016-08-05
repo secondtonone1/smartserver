@@ -1,5 +1,6 @@
 #include "CLock.h"
 
+//在构造函数里创建锁
 Mutex::Mutex()
 {
 	#if defined _WIN32
@@ -7,6 +8,7 @@ Mutex::Mutex()
 	#endif
 }
 
+//析构函数里销毁锁
 Mutex::~ Mutex()
 {
 	#if defined _WIN32
@@ -14,6 +16,7 @@ Mutex::~ Mutex()
 	#endif
 }
 
+//互斥锁上锁
 void Mutex::lock() const
 {
 	#if defined _WIN32
@@ -21,6 +24,7 @@ void Mutex::lock() const
 	#endif
 }
 
+//互斥锁解锁
 void Mutex::unlock() const
 {
 	#if defined _WIN32

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 {
 	bool initialRes = NetWorkSystem::getSingleton().initial();
 	
-	smart::test msg1; 
+	/*smart::test msg1; 
 	msg1.set_age(101); 
 	msg1.set_name("nice to meet you!");
 	std::fstream out("User.pb", std::ios::out | std::ios::binary | std::ios::trunc);  
@@ -36,9 +36,23 @@ int main(int argc, char **argv)
 	std::cout << msg2.age() << std::endl;  
 	std::cout << msg2.name() << std::endl; 
 	std::cout << msg2.email() << std::endl;
-	std::cout << "adfdf" <<std::endl;
+	std::cout << "adfdf" <<std::endl;*/
 
+	/*smart::test msg1; 
+	msg1.set_age(101); 
+	msg1.set_name("nice to meet you!");
+	msg1.set_email("1017234");
 
+	std::string bufStr;
+	msg1.SerializeToString(&bufStr);
+
+	smart::test msg2;
+	msg2.ParseFromString(bufStr);
+	cout << msg2.age() <<endl;
+	cout << msg2.name() << endl;
+	cout << msg2.email() << endl;*/
+
+	
 	NetWorkSystem::getSingleton().run();
 	
 	

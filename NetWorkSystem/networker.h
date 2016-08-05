@@ -5,6 +5,7 @@
 #include "../basethread.h"
 #include "tcphandler.h"
 #include "../CLock.h"
+#include "msghandler.h"
 
 class  ConMsgNode
 {
@@ -89,6 +90,7 @@ public:
 private:
 	MsgStream m_msgInStream;
     MsgStream m_msgOutStream;
+	MsgHandler m_msgHandler;
 	
 };
 

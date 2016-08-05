@@ -27,6 +27,7 @@
 #include <iostream>
 using namespace std;
 #define PACKETHEADLEN  8
+# define  MAXMESSAGEID  1024
 
 struct PacketHead
 {
