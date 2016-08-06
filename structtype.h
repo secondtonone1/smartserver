@@ -35,6 +35,12 @@ struct PacketHead
 	int packetLen;
 };
 
+struct PacketMsg
+{
+	struct PacketHead head;
+	char * MsgData;
+};
+
 typedef long long int  Int64;
 typedef int Int32;
 typedef unsigned long long int UInt64;

@@ -4,8 +4,8 @@ void NetWorker::threadWorkFunc(void )
 {
 	while(1)
 	{
-		
-		const MsgStream & msgStream = popMsgFromInStream();
+		cout <<"current worker pointer *"<<  this <<endl;
+		MsgStream & msgStream = popMsgFromInStream();
 		UInt32 count = msgStream.getCount();
 		if(count == 0)
 		{
@@ -21,7 +21,7 @@ void NetWorker::threadWorkFunc(void )
 	
 		for(UInt32 i = 0; i < count; i++)
 		{
-			ConMsgNode & msgNode = m_msgInStream.popMsgFromList();
+			 ConMsgNode  &msgNode = msgStream.popMsgFromList();
 			m_msgHandler.handleMsg(msgNode);
 		}
 		
@@ -32,8 +32,8 @@ void NetWorker::threadWorkFunc(void )
 void NetWorker::pushNodeInStream(TcpHandler * tcpHandler)
 {
 		//加锁处理消息加入到instream里
-		Mutex mutexlock;
-		CLock mylock(mutexlock);	
+		CLock mylock(m_mutexLock);	
+		cout << this << "push lock!!!" <<endl;
 		list<MsgNode *> * msgList = tcpHandler->getListMsgs();
 		UInt32 count = msgList->size();
 		
@@ -57,7 +57,7 @@ void NetWorker::pushNodeInStream(TcpHandler * tcpHandler)
 			}
 			
 		}
-
+	cout <<this << "push unlock!!!" <<endl;
 }
 
 
@@ -69,6 +69,13 @@ void MsgStream::insertMsgToList(const ConMsgNode  &msgNode)
 
 ConMsgNode MsgStream::popMsgFromList()
 {
+	
+	if(!m_nCount)
+	{
+		ConMsgNode msgNode;
+		return msgNode ;
+	}
+
 	ConMsgNode msgNode =  m_listConMsg.front();
 	m_listConMsg.pop_front();
 	m_nCount--;
@@ -82,12 +89,13 @@ UInt32 MsgStream::getCount(void) const
 
 MsgStream  NetWorker::popMsgFromInStream()
 {
-	Mutex mutexLock;
-	CLock mylock(mutexLock);
+	CLock mylock(m_mutexLock);
+	cout << this << "pop lock!!" << endl;
 	MsgStream msgStream;
 	UInt32 count = m_msgInStream.getCount();
 	if(!count)
 	{
+		cout << this << "pop unlock !!" <<endl;
 		return msgStream;
 	}
 	
@@ -97,5 +105,6 @@ MsgStream  NetWorker::popMsgFromInStream()
 		msgStream.insertMsgToList(msgNode);
 	}
 
+	cout <<this <<  "pop unlock!!" <<endl;
 	return msgStream;
 }

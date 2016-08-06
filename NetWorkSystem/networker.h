@@ -79,7 +79,7 @@ private:
 class NetWorker: public BaseThread
 {
 public:
-	NetWorker(){}
+	NetWorker(){ m_msgHandler.registerMsgs();}
 	virtual ~ NetWorker(){}
 	virtual void threadWorkFunc();
 
@@ -91,6 +91,8 @@ private:
 	MsgStream m_msgInStream;
     MsgStream m_msgOutStream;
 	MsgHandler m_msgHandler;
+
+	Mutex m_mutexLock;
 	
 };
 
