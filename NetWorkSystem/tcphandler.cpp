@@ -45,6 +45,12 @@ void TcpHandler::dealReadEvent()
 	
 }
 
+void TcpHandler::dealWriteEvent(std::string strSend)
+{
+	bufferevent_write(m_pBufferevent, strSend.c_str(), strSend.size());
+}
+
+
 list<MsgNode *> * TcpHandler::getListMsgs(void)
 {
 	return &m_listMsgs;

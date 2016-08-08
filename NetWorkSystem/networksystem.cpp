@@ -105,9 +105,20 @@ void NetWorkSystem::eraseConnection( bufferevent * bev)
 	std::map<evutil_socket_t, TcpHandler *>::iterator tcpHandlerIter = m_mapTcpHandlers.find(bufferfd);
 	if(tcpHandlerIter != m_mapTcpHandlers.end())
 	{
-		delete(tcpHandlerIter->second);
+		if(tcpHandlerIter->second)
+		{
+				UInt64 connId = tcpHandlerIter->second->getConnId();
+				m_mapConHandlers.erase(connId);
+				delete(tcpHandlerIter->second);
+				tcpHandlerIter->second = NULL;
+
+				cout << "connection id : "<< connId <<" erase!" << endl;
+		}
+	
 		m_mapTcpHandlers.erase(tcpHandlerIter);	
 	}
+
+	
 }
 
 
@@ -163,6 +174,20 @@ void NetWorkSystem::release()
 	event_base_free(m_pEvent_base);
 	event_free(m_pListenevent);
 	evutil_closesocket(m_nListenfd);
+	for(std::map<evutil_socket_t, TcpHandler *>::iterator mapIter = m_mapTcpHandlers.begin();
+		mapIter != m_mapTcpHandlers.end();  mapIter ++)
+	{
+		if(mapIter->second)
+		{
+			delete(mapIter->second);
+			mapIter->second = NULL;
+		}
+		
+	}
+
+	m_mapTcpHandlers.clear();
+	
+	m_mapConHandlers.clear();
 }
 
 void NetWorkSystem::addConnection(evutil_socket_t fd, bufferevent * bev)
@@ -176,6 +201,8 @@ void NetWorkSystem::addConnection(evutil_socket_t fd, bufferevent * bev)
 	}
 
 	m_mapTcpHandlers.insert(pair<evutil_socket_t,  TcpHandler*>(fd, tcpHandler));
-	
+
+	m_mapConHandlers.insert(pair<UInt64, TcpHandler *>(m_nConnId, tcpHandler));
+
 	cout <<"connectionid is:  " <<  m_nConnId << endl;
 }

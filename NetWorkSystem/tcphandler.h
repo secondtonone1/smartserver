@@ -139,6 +139,8 @@ public:
 
 	void dealReadEvent();
 
+	void dealWriteEvent(std::string strSend);
+
 	list<MsgNode *> * getListMsgs(void);
 
 private:

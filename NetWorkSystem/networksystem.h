@@ -31,6 +31,7 @@ private:
 	evutil_socket_t  m_nListenfd ;
 	event* m_pListenevent;
 	std::map<evutil_socket_t, TcpHandler *> m_mapTcpHandlers;
+	std::map<UInt64, TcpHandler *> m_mapConHandlers;
 	UInt64 m_nConnId;
 	NetWorker *  m_pNetWorkers[2];
 };

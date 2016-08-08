@@ -14,9 +14,11 @@ void TestMsgHandler::HandleTestMsg(const ConMsgNode & msgNode)
 			cout <<msgId << " msg parse error!" <<endl;
 			return;
 		}
+
 		cout << m_smartTest.age() <<endl;
 		cout << m_smartTest.name() << endl;
 		cout << m_smartTest.email() << endl;
-		
 
+		
+		
 }
