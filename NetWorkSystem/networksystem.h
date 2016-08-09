@@ -22,7 +22,7 @@ public:
 	static  void listener_read_cb(evutil_socket_t fd, short what, void *p);
 	void run();
 	void release();
-
+	TcpHandler * getHandlerByConnId(UInt64 connId);
 private:
 	void addConnection(evutil_socket_t fd, bufferevent * bev);
 	void eraseConnection(  bufferevent * bev);

@@ -37,6 +37,7 @@ class MsgNode
 			m_nMsgId = msgNode.m_nMsgId;
 			memcpy(m_pMsg, msgNode.m_pMsg, msgNode.m_nMsgLen);
 			m_pMsg[msgNode.m_nMsgLen] = '\0';
+
 		}
 
 		MsgNode & operator = (const MsgNode & msgNode)
@@ -44,9 +45,11 @@ class MsgNode
 			if(m_pMsg)
 			{
 				delete m_pMsg;
+				m_pMsg = NULL;
 			}
 
 			m_pMsg = (char *)malloc(sizeof(char) *(msgNode.m_nMsgLen +1));
+			
 			if(!m_pMsg)
 			{
 				cout << "malloc error !!!" <<endl;
@@ -58,15 +61,17 @@ class MsgNode
 			m_nMsgId = msgNode.m_nMsgId;
 			memcpy(m_pMsg, msgNode.m_pMsg, msgNode.m_nMsgLen);
 			m_pMsg[msgNode.m_nMsgLen] = '\0';
+
+			
 			return * this;
 		}
 
 		~MsgNode(){
 			if(m_pMsg)
 			{
+				
 				free (m_pMsg);
 				m_pMsg = NULL;
-
 				m_nMsgLen = 0;
 				m_nMsgId = 0;
 				m_nOffSet = 0;

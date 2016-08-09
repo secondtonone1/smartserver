@@ -190,6 +190,17 @@ void NetWorkSystem::release()
 	m_mapConHandlers.clear();
 }
 
+TcpHandler * NetWorkSystem::getHandlerByConnId(UInt64 connId)
+{
+	std::map<UInt64, TcpHandler *>::iterator  findIter = m_mapConHandlers.find(connId);
+	if(findIter == m_mapConHandlers.end())
+	{
+		return NULL;
+	}
+
+	return findIter->second;
+}
+
 void NetWorkSystem::addConnection(evutil_socket_t fd, bufferevent * bev)
 {
 	m_nConnId ++;

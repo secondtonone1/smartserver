@@ -4,13 +4,13 @@ void NetWorker::threadWorkFunc(void )
 {
 	while(1)
 	{
-		cout <<"current worker pointer *"<<  this <<endl;
+		//cout <<"current worker pointer *"<<  this <<endl;
 		MsgStream & msgStream = popMsgFromInStream();
 		UInt32 count = msgStream.getCount();
 		if(count == 0)
 		{
 			#if defined _WIN32
-				cout << "msg count == 0!" <<endl;
+		//		cout << "msg count == 0!" <<endl;
 				Sleep(2000);
 				continue;
 			#endif
@@ -33,21 +33,26 @@ void NetWorker::pushNodeInStream(TcpHandler * tcpHandler)
 {
 		//加锁处理消息加入到instream里
 		CLock mylock(m_mutexLock);	
-		cout << this << "push lock!!!" <<endl;
+
+		//cout << this << "push lock!!!" <<endl;
 		list<MsgNode *> * msgList = tcpHandler->getListMsgs();
 		UInt32 count = msgList->size();
 		
 		for(UInt32 i = 0; i < count; i++)
 		{
 			MsgNode * pMsgNode = msgList->front();
+		
 			bool res = pMsgNode->isReceived();
 			if(res)
 			{
-				msgList->pop_front();
+				
 				ConMsgNode conMsgNode;
 				conMsgNode.mConnId = tcpHandler->getConnId();
 				conMsgNode.mMsgNode = *pMsgNode;
 				delete(pMsgNode);
+				pMsgNode = NULL;
+				msgList->pop_front();
+			
 				m_msgInStream.insertMsgToList(conMsgNode);
 
 			}
@@ -57,7 +62,7 @@ void NetWorker::pushNodeInStream(TcpHandler * tcpHandler)
 			}
 			
 		}
-	cout <<this << "push unlock!!!" <<endl;
+//	cout <<this << "push unlock!!!" <<endl;
 }
 
 
@@ -90,12 +95,12 @@ UInt32 MsgStream::getCount(void) const
 MsgStream  NetWorker::popMsgFromInStream()
 {
 	CLock mylock(m_mutexLock);
-	cout << this << "pop lock!!" << endl;
+//	cout << this << "pop lock!!" << endl;
 	MsgStream msgStream;
 	UInt32 count = m_msgInStream.getCount();
 	if(!count)
 	{
-		cout << this << "pop unlock !!" <<endl;
+	//	cout << this << "pop unlock !!" <<endl;
 		return msgStream;
 	}
 	
@@ -105,6 +110,6 @@ MsgStream  NetWorker::popMsgFromInStream()
 		msgStream.insertMsgToList(msgNode);
 	}
 
-	cout <<this <<  "pop unlock!!" <<endl;
+	//cout <<this <<  "pop unlock!!" <<endl;
 	return msgStream;
 }
