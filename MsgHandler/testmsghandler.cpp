@@ -20,13 +20,15 @@ void TestMsgHandler::HandleTestMsg(const ConMsgNode & msgNode)
 		cout << m_smartTest.email() << endl;
 
 		//²âÊÔ»Ø°ü
-	/*	TcpHandler * tcpHandler = NetWorkSystem::getSingleton().getHandlerByConnId(msgNode.mConnId);
+		TcpHandler * tcpHandler = NetWorkSystem::getSingleton().getHandlerByConnId(msgNode.mConnId);
 		if(tcpHandler)
 		{
 				std::string strTest;
 				m_smartTest.SerializeToString(&strTest);
-				tcpHandler->dealWriteEvent(strTest);
-		}*/
+				cout << "serialize string is : "<< strTest <<endl;
+				const UInt32 &msgId = msgNode.mMsgNode.getMsgId();
+				tcpHandler->dealWriteEvent(msgId,strTest);
+		}
 		
 	
 		

@@ -5,21 +5,21 @@ static int readtimes = 0;
 //处理读事件
 void TcpHandler::dealReadEvent()
 {
-	cout << "m_pLastNode addr is:  " << m_pLastNode <<endl;
+	//cout << "m_pLastNode addr is:  " << m_pLastNode <<endl;
 	if(m_pLastNode)
 	{
-		cout << "m_pLastNode msglen is:  "<< m_pLastNode->m_nMsgLen <<endl;
-		cout << "m_pLastNode m_nOffSet is: " << m_pLastNode->m_nOffSet <<endl;
+		//cout << "m_pLastNode msglen is:  "<< m_pLastNode->m_nMsgLen <<endl;
+		//cout << "m_pLastNode m_nOffSet is: " << m_pLastNode->m_nOffSet <<endl;
 	}
 	else
 	{
-		cout << "m_pLastNode addr is null!!!" <<endl;
+		//cout << "m_pLastNode addr is null!!!" <<endl;
 	}
 	
 
 	evbuffer * inputBuf = bufferevent_get_input(m_pBufferevent);
 	size_t inputLen = evbuffer_get_length(inputBuf);
-	cout <<"total len is : "<<  inputLen <<endl;
+	//cout <<"total len is : "<<  inputLen <<endl;
 	while(inputLen > 0)
 	{
 		//tcphandler第一次接收消息或者该node接收完消息，需要开辟新的node接受消息
@@ -44,7 +44,7 @@ void TcpHandler::dealReadEvent()
 			insertNode(packetHead.packetID, packetHead.packetLen);
 
 			inputLen -= PACKETHEADLEN;
-			cout << "after remove head the length is : " << inputLen <<endl;
+			//cout << "after remove head the length is : " << inputLen <<endl;
 		}
 
 		//考虑可能去包头后剩余的为0
@@ -59,9 +59,28 @@ void TcpHandler::dealReadEvent()
 	
 }
 
-void TcpHandler::dealWriteEvent(std::string strSend)
+void TcpHandler::dealWriteEvent(UInt32 msgID, std::string strSend)
 {
-	bufferevent_write(m_pBufferevent, strSend.c_str(), strSend.size());
+	cout << "packet length is : " << strSend.size() <<endl;
+	PacketHead packetHead;
+	packetHead.packetID = msgID;
+	packetHead.packetLen = strSend.size();
+
+	char * sendData = (char *)malloc(sizeof(char) *(strSend.size() + PACKETHEADLEN) );
+	memcpy(sendData, &packetHead, PACKETHEADLEN);
+	memcpy(sendData + PACKETHEADLEN,  strSend.c_str(), strSend.size());
+	int n = bufferevent_write(m_pBufferevent, sendData, strSend.size() + PACKETHEADLEN);
+	//由于bufferevent的读写事件初始化都是永久的，用户可以根据自己的需求更改
+	//在写事件将数据写到低水位后会将写事件移除，而enable会使事件重新加进来
+	//读事件将数据从socket缓存区读取到inputbuffer，成功的情况下并不会将读事件移除
+	if(n < 0)
+	{
+		cout << "write msg to bufferevent outputbuffer failed !!!" <<endl;
+		return ;
+	}
+
+	bufferevent_enable(m_pBufferevent, EV_WRITE);
+
 }
 
 
@@ -80,23 +99,23 @@ void TcpHandler::tcpRead(UInt32 &inputLen)
 	//node节点中的数据还有多少没读完
 	assert(m_pLastNode->m_nMsgLen >= m_pLastNode->m_nOffSet);
 	UInt32 remainLen = m_pLastNode->m_nMsgLen - m_pLastNode->m_nOffSet;
-	cout << "remainLen is: " <<remainLen << endl;
+	//cout << "remainLen is: " <<remainLen << endl;
 	
 	UInt32 readLen = bufferevent_read(m_pBufferevent, m_pLastNode->m_pMsg + m_pLastNode->m_nOffSet, remainLen);
-	cout << "tcp read len is : " << readLen <<endl;
+	//cout << "tcp read len is : " << readLen <<endl;
 
 	//统计bufferevent 的inputbuffer中剩余的长度
 	inputLen -= readLen;
 	//更改偏移标记
 	m_pLastNode->m_nOffSet += readLen;
-	cout << "after read  offset is :  " <<m_pLastNode->m_nOffSet <<endl;
+	//cout << "after read  offset is :  " <<m_pLastNode->m_nOffSet <<endl;
 
 	//判断读完
 	if(m_pLastNode->m_nOffSet >= m_pLastNode->m_nMsgLen)
 	{
 		m_pLastNode->m_pMsg[m_pLastNode->m_nMsgLen ] = '\0'; 
-		cout << "receive msg is : " << m_pLastNode->m_pMsg << endl;
-		cout <<"read times is :  " << ++readtimes<< endl;
+		//cout << "receive msg is : " << m_pLastNode->m_pMsg << endl;
+		//cout <<"read times is :  " << ++readtimes<< endl;
 
 		m_pLastNode = NULL;
 		
@@ -124,9 +143,9 @@ bool MsgNode::isReceived()
 bool TcpHandler::insertNode(UInt32 msgId, UInt32 msgLen)
 {
 	readtimes++;
-	cout << "insert node : "<< readtimes << endl;
-	cout << "msgId is: " << msgId << endl;
-	cout << "msgLen is: " <<msgLen <<endl;
+	//cout << "insert node : "<< readtimes << endl;
+	//cout << "msgId is: " << msgId << endl;
+	//cout << "msgLen is: " <<msgLen <<endl;
 
 	MsgNode * msgNode = new MsgNode(msgId, msgLen);
 	if(!msgNode)
@@ -138,7 +157,7 @@ bool TcpHandler::insertNode(UInt32 msgId, UInt32 msgLen)
 	m_listMsgs.push_back(msgNode);
 
 	m_pLastNode = msgNode;
-	cout <<"new m_pLastNode addr is:  " <<m_pLastNode << endl;
+	//cout <<"new m_pLastNode addr is:  " <<m_pLastNode << endl;
 	
 
 	return true;

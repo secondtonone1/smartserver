@@ -144,7 +144,7 @@ public:
 
 	void dealReadEvent();
 
-	void dealWriteEvent(std::string strSend);
+	void dealWriteEvent(UInt32 msgID, std::string strSend);
 
 	list<MsgNode *> * getListMsgs(void);
 

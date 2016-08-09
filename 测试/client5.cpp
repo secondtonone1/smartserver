@@ -22,6 +22,8 @@ using namespace smart;
 
 using namespace std;
 
+int recvCount = 0;
+
 struct PacketHead
 {
 	int packetID;
@@ -54,13 +56,13 @@ void *sendf(void *arg)
 	memcpy(sendData, &packetHead, 8);
 	//cout << "now head is: " << sendData << endl;
     	memcpy(sendData + 8, bufStr.c_str(), packetHead.packetLen);
-	cout << "msg len is : " << packetHead.packetLen << endl;
+//	cout << "msg len is : " << packetHead.packetLen << endl;
 	//发送数据
 
 	
 	int sendLen = send(s, sendData, sizeof(packetHead) + packetHead.packetLen, 0);
 
-	cout << "send datalen: " <<  sendLen << endl;
+//	cout << "send datalen: " <<  sendLen << endl;
 	usleep(500000);
 	}
 	
@@ -75,13 +77,15 @@ void * recvf(void *arg)
 	int * pSocket = (int *) arg;
 	int s = *pSocket;
 	char packethead[8]={0};
-	char recvData[40]={0};
+
+	cout << "........................."<<endl;
 	while(1)
 	{
 		int offset = 0;
 		int recvlen = recv(s,packethead,8-offset,0);
 		if(recvlen == -1 || recvlen < 0)
 		{
+			cout << "error!!!" <<endl;
 			continue;
 		}
 		
@@ -91,33 +95,48 @@ void * recvf(void *arg)
 			offset += recvlen;
 			recvlen = recv(s,packethead,8-offset,0);
 		}
+
+		cout << "offset is : " << offset <<endl;
+		cout << "recvlen is : " << recvlen <<endl;
+		cout << "recv head len is : " << recvlen + offset <<endl;
 		
 		struct PacketHead packetHead;
-		memcpy(&packetHead, packetHead, 8);
+		memcpy(&packetHead, &packethead, 8);
 		cout << "packet ID: " << packetHead.packetID << endl;
 		cout << "packet Len: " << packetHead.packetLen << endl;
 		
 		offset = 0;
+		char * recvData = (char *)malloc((packetHead.packetLen+1) * sizeof(char));
+
 		int recvpacketlen = recv(s, recvData, packetHead.packetLen, 0);
+
+		while(recvpacketlen < 0)
+		{
+			recvpacketlen = recv(s, recvData, packetHead.packetLen, 0);
+		}
+
+
 		while(recvpacketlen < packetHead.packetLen - offset)
 		{
-			if(recvpacketlen < 0)
-			{
-				continue;
-			}
-			
+						
 			offset += recvpacketlen;
 			recvpacketlen = recv(s, recvData, packetHead.packetLen - offset, 0);
 			
 		}
+
+		cout << "+++++++++++++++++++++++++++++++++++++++"<<endl;
+		recvData[packetHead.packetLen] = '\0';
 		std::string bufStr(recvData);
 		smart::test msg1; 
 		msg1.ParseFromString(bufStr);
 		
-		cout <<"age is : " << m_smartTest.age() <<endl;
-		cout << "name is : " << m_smartTest.name() << endl;
-		cout << "email is : " << m_smartTest.email() << endl;
+		cout <<"age is : " << msg1.age() <<endl;
+		cout << "name is : " << msg1.name() << endl;
+		cout << "email is : " << msg1.email() << endl;
+		
+		free(recvData);
 
+		cout << "recvCount is : " << ++recvCount <<endl;
 		
 	}	
 		
@@ -141,7 +160,7 @@ int main(int argc, char * argv[])
 	//初始化服务器地址
 	struct sockaddr_in server;
 
-	memset(&server, 0, sizeof(server));
+	memset(&server, -1, sizeof(server));
 
 	server.sin_family = AF_INET;
 	server.sin_port = htons(SERVER_PORT);
@@ -167,7 +186,7 @@ int main(int argc, char * argv[])
 
 	
 	//Linux一个进程最多开辟1024线程
-	
+	cout << "begin tid " <<endl;	
 		pthread_t tid;
 		int error = pthread_create(&tid, NULL, sendf, &s);
 		if(error!=0)
@@ -177,8 +196,9 @@ int main(int argc, char * argv[])
 		}
 		
 
-		pthread_join(tid, NULL);
 		
+		
+		cout << "begin tid2" <<endl;
 		pthread_t tid2;
 		int error2 = pthread_create(&tid2, NULL, recvf, &s);
 		if(error2!=0)
@@ -188,8 +208,9 @@ int main(int argc, char * argv[])
 		}
 		
 
+		pthread_join(tid, NULL);
 		pthread_join(tid2, NULL);
-	
+		
 	
 	
 	

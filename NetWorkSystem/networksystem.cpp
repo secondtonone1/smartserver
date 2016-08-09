@@ -89,7 +89,7 @@ NetWorkSystem::listener_read_cb(evutil_socket_t fd, short what, void *p)
 
 void NetWorkSystem::tcpwrite_cb(struct bufferevent *bev, void *ctx)
 {
-	
+	cout << "write success !!!" <<endl;
 }
 
 //出现连接错误的时候要清除数据，释放tcphandler
