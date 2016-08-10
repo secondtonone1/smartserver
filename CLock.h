@@ -1,7 +1,12 @@
 # ifndef _BASELOCK_H_
 # define _BASELOCK_H_
-
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
+#ifdef __linux__
+#include <pthread.h>
+#endif
 
 //各种类型的锁的基类
 class BaseLock
@@ -24,6 +29,10 @@ public:
 private:
 #if defined _WIN32
 	HANDLE m_hMutex;
+#endif
+
+#ifdef __linux__
+	pthread_mutex_t m_hMutex;
 #endif
 };
 

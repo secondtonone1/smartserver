@@ -51,7 +51,14 @@ void NetWorkSystem::dealReadEvent(struct bufferevent *bev, void *ctx)
 	std::map<evutil_socket_t, TcpHandler *>::iterator tcpHandlerIter = m_mapTcpHandlers.find(bufferfd);
 	if(tcpHandlerIter != m_mapTcpHandlers.end())
 	{
-		tcpHandlerIter->second->dealReadEvent();
+		int success = 1;
+		tcpHandlerIter->second->dealReadEvent(success);
+		if(!success)
+		{
+			cout << "unserialise msg failed!!!" <<endl;
+			eraseConnection(bev);
+			return;
+		}
 		//调用应用层消息处理
 		const UInt64 &connId  =  tcpHandlerIter->second->getConnId();
 		m_pNetWorkers[connId%2]->pushNodeInStream(tcpHandlerIter->second);
@@ -70,6 +77,7 @@ NetWorkSystem::listener_read_cb(evutil_socket_t fd, short what, void *p)
 	if(acceptres == -1)
 	{
 		cout << "accept failed !" <<endl;
+		return ;
 	}
 
 	event_base * eventbase =(event_base *) p;
@@ -102,6 +110,8 @@ void NetWorkSystem::tcperror_cb(struct bufferevent *bev, short what, void *ctx)
 void NetWorkSystem::eraseConnection( bufferevent * bev)
 {
 	evutil_socket_t  bufferfd = bufferevent_getfd(bev);
+	evutil_closesocket(bufferfd);
+
 	std::map<evutil_socket_t, TcpHandler *>::iterator tcpHandlerIter = m_mapTcpHandlers.find(bufferfd);
 	if(tcpHandlerIter != m_mapTcpHandlers.end())
 	{

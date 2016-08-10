@@ -19,6 +19,20 @@ unsigned _stdcall threadFunc (void * param)
 
 #endif
 
+#if defined __linux__
+void * threadFunc(void * param)
+{
+	Sleep(1000);
+	assert(param);
+	BaseThread * baseThread = static_cast<BaseThread *>(param);
+	assert(baseThread);
+	baseThread->threadWorkFunc();
+
+	return NULL;
+}
+
+#endif
+
 
 
 void BaseThread::startup(UInt32 stackSize)
@@ -32,6 +46,35 @@ void BaseThread::startup(UInt32 stackSize)
 	// Sleep(1000);
 	
 	#endif
+
+	#ifdef __linux__
+	 pthread_attr_t attr;
+	 if (pthread_attr_init(&attr) != 0)
+	 {
+		 cout <<"Failed init thread attr" <<endl;
+		 return ;
+	 }
+
+	 if (pthread_attr_setstacksize(&attr, stackSize) != 0)
+	 {
+		cout << "Failed to set stack size." <<endl;
+		 return ;
+	 }
+
+	 if (pthread_create(&m_nId, &attr, threadFunc, this) != 0)
+	 {
+		 cout <<"pthread create failed!!!"<<endl;
+		 return ;
+	 }
+
+	 if (pthread_attr_destroy(&attr) != 0) 
+	 {
+		 cout << "Failed to destroy thread attr." <<endl;
+		 return ;
+	 }
+
+	#endif
+
 }
 
 BaseThread::~BaseThread()
@@ -42,6 +85,11 @@ BaseThread::~BaseThread()
 
 void BaseThread::join()
 {
+	if (m_nId == 0)
+	{
+		return;
+	}
+
 	#if defined _WIN32
 	 DWORD exitCode;
 	 while(1)
@@ -69,6 +117,19 @@ void BaseThread::join()
 	 CloseHandle(m_hThread);
 	#endif
 
+	#ifdef __linux__
+	 void* stat;
+	 if (m_nId != pthread_self())
+	 {
+		 int r = pthread_join(m_nId, &stat);
+		 if (r != 0)
+		 {
+			 cout << "Failed to call pthread_join" <<endl;
+			 assert(0);
+		 }
+	 }
+
+	#endif
 	 m_nId = 0;
 }
 

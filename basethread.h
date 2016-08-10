@@ -1,12 +1,18 @@
 # ifndef _BASE_THREAD_H_
 #define _BASE_THREAD_H_
 
-#ifndef _WIN32
+#ifdef __linux__
 #include <pthread.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
 #endif
 
+#ifdef _WIN32
 #include <Winsock2.h>
 #include <process.h>
+#endif
+
 #include <structtype.h>
 
 class BaseThread
@@ -19,7 +25,13 @@ public:
 	void testFunc();
 	virtual void threadWorkFunc(void)=0;
 protected:
+#ifdef _WIN32
 	UInt32 m_nId;
+#endif
+
+#ifdef __linux__
+	pthread_t m_nId;
+#endif
 
 private:
 

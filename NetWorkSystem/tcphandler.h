@@ -142,7 +142,7 @@ public:
 
 	const UInt64 &getConnId(void);
 
-	void dealReadEvent();
+	void dealReadEvent(int & success);
 
 	void dealWriteEvent(UInt32 msgID, std::string strSend);
 

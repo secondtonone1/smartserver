@@ -3,7 +3,7 @@
 #include <assert.h>
 static int readtimes = 0;
 //处理读事件
-void TcpHandler::dealReadEvent()
+void TcpHandler::dealReadEvent(int & success)
 {
 	//cout << "m_pLastNode addr is:  " << m_pLastNode <<endl;
 	if(m_pLastNode)
@@ -40,6 +40,12 @@ void TcpHandler::dealReadEvent()
 			cout << "packetId is : " <<packetHead.packetID << endl;
 
 			cout << "packetLen is :  " << packetHead.packetLen << endl;
+			
+			if(packetHead.packetID > 1024 || packetHead.packetID < 0)
+			{
+				success = 0;
+				return;
+			}
 
 			insertNode(packetHead.packetID, packetHead.packetLen);
 
