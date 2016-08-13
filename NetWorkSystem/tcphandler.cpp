@@ -59,6 +59,7 @@ void TcpHandler::dealReadEvent(int & success)
 			break;
 		}
 		//读取去除包头后剩余消息
+		
 		tcpRead(inputLen);
 	}
 
@@ -100,7 +101,7 @@ const UInt64 &TcpHandler::getConnId(void)
 	return m_nConnId;
 }
 
-void TcpHandler::tcpRead(UInt32 &inputLen)
+void TcpHandler::tcpRead(size_t &inputLen)
 {
 	//node节点中的数据还有多少没读完
 	assert(m_pLastNode->m_nMsgLen >= m_pLastNode->m_nOffSet);

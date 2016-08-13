@@ -32,7 +32,7 @@ protected:
 #ifdef __linux__
 	pthread_t m_nId;
 #endif
-
+		UInt32 m_nShutDown;
 private:
 
 #if defined _WIN32
@@ -40,7 +40,7 @@ private:
 #endif
 
 	
-	UInt32 m_nShutDown;
+	;
 
 };
 

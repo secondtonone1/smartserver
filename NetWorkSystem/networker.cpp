@@ -4,14 +4,26 @@ void NetWorker::threadWorkFunc(void )
 {
 	while(1)
 	{
-		//cout <<"current worker pointer *"<<  this <<endl;
-		MsgStream & msgStream = popMsgFromInStream();
+		if(m_nShutDown)
+		{
+			break;
+		}
+	
+		
+		MsgStream  msgStream;
+		bool flag = popMsgFromInStream(msgStream);
 		UInt32 count = msgStream.getCount();
-		if(count == 0)
+		if(count == 0 || !flag )
 		{
 			#if defined _WIN32
-		//		cout << "msg count == 0!" <<endl;
+	
 				Sleep(2000);
+				continue;
+			#endif
+
+			#if defined __linux__
+				cout << "net worker msg node null"<<endl;
+				sleep(2);
 				continue;
 			#endif
 		}
@@ -21,11 +33,24 @@ void NetWorker::threadWorkFunc(void )
 	
 		for(UInt32 i = 0; i < count; i++)
 		{
-			 ConMsgNode  &msgNode = msgStream.popMsgFromList();
-			m_msgHandler.handleMsg(msgNode);
+			ConMsgNode  msgNode ;
+			 bool flag = msgStream.popMsgFromList(msgNode);
+			 if(flag)
+			 {
+				m_msgHandler.handleMsg(msgNode);
+			 }
+			
 		}
+		cout << "success net worker threadfunc!!!"<<endl;
 		
 	}
+
+	//Ïú»ÙËø
+	if(m_mutexLock)
+	{
+		delete(m_mutexLock);
+	}
+	m_mutexLock = NULL;	
 }
 
 
@@ -72,19 +97,18 @@ void MsgStream::insertMsgToList(const ConMsgNode  &msgNode)
 	m_nCount++;
 }
 
-ConMsgNode MsgStream::popMsgFromList()
+bool MsgStream::popMsgFromList(ConMsgNode & msgNode)
 {
 	
 	if(!m_nCount)
 	{
-		ConMsgNode msgNode;
-		return msgNode ;
+		return false;
 	}
 
-	ConMsgNode msgNode =  m_listConMsg.front();
+	msgNode =  m_listConMsg.front();
 	m_listConMsg.pop_front();
 	m_nCount--;
-	return msgNode;
+	return true;
 }
 
 UInt32 MsgStream::getCount(void) const
@@ -92,24 +116,33 @@ UInt32 MsgStream::getCount(void) const
 	return m_nCount;
 }
 
-MsgStream  NetWorker::popMsgFromInStream()
+bool  NetWorker::popMsgFromInStream(MsgStream &msgStream)
 {
+	if(m_nShutDown)
+	{
+		return false;
+	}
 	CLock mylock(m_mutexLock);
 //	cout << this << "pop lock!!" << endl;
-	MsgStream msgStream;
+	
 	UInt32 count = m_msgInStream.getCount();
 	if(!count)
 	{
 	//	cout << this << "pop unlock !!" <<endl;
-		return msgStream;
+		return false;
 	}
 	
 	for(UInt32 i = 0; i < count; i++)
 	{
-	    ConMsgNode & msgNode = m_msgInStream.popMsgFromList();
-		msgStream.insertMsgToList(msgNode);
+	    ConMsgNode  msgNode;
+		bool flag = m_msgInStream.popMsgFromList(msgNode);
+		if(flag)
+		{
+				msgStream.insertMsgToList(msgNode);
+		}
+	
 	}
 
 	//cout <<this <<  "pop unlock!!" <<endl;
-	return msgStream;
+	return true;
 }

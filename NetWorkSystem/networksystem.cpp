@@ -17,11 +17,13 @@ NetWorkSystem::NetWorkSystem(){
 	m_nListenfd = 0;
 	m_pEvent_base = 0;
 	m_nConnId = 0;
+
 	for(int i = 0; i < 2; i++)
 	{
 		m_pNetWorkers[i] = new NetWorker();	
 		m_pNetWorkers[i]->startup();
 	}
+	
 }
 
 NetWorkSystem::~NetWorkSystem()
@@ -31,7 +33,10 @@ NetWorkSystem::~NetWorkSystem()
 	m_nConnId = 0;
 	for(int i = 0; i < 2; i++)
 	{
-		delete m_pNetWorkers[i];
+		if(m_pNetWorkers[i])
+		{
+			delete m_pNetWorkers[i];
+		}
 		m_pNetWorkers[i] = NULL;
 	}
 
@@ -73,7 +78,7 @@ NetWorkSystem::listener_read_cb(evutil_socket_t fd, short what, void *p)
 	sockaddr_in serveraddr;
 	memset(&serveraddr, 0, sizeof(sockaddr_in));
 	size_t addrlen = sizeof(sockaddr_in);
-	evutil_socket_t acceptres = accept(fd, (sockaddr *)&serveraddr, (int *)&addrlen);
+	int acceptres = accept(fd, (sockaddr *)&serveraddr, (socklen_t *)&addrlen);
 	if(acceptres == -1)
 	{
 		cout << "accept failed !" <<endl;
@@ -149,7 +154,8 @@ bool NetWorkSystem::initial()
 	sockaddr_in listenAddr;
 	memset(&listenAddr, 0, sizeof(listenAddr) );
 
-	listenAddr.sin_addr.s_addr = inet_addr("192.168.1.99");
+//	listenAddr.sin_addr.s_addr = inet_addr("192.168.1.99");
+	listenAddr.sin_addr.s_addr = INADDR_ANY;
 	listenAddr.sin_family = AF_INET;
 	listenAddr.sin_port = htons(9995);
 	evutil_make_socket_nonblocking(m_nListenfd);
@@ -159,6 +165,7 @@ bool NetWorkSystem::initial()
 	int bindres = bind(m_nListenfd, (sockaddr *)&listenAddr, sizeof(listenAddr));
 	if(bindres == -1)
 	{
+		cout << "bind false!!!"<<endl;
 		return false;
 	}
 
@@ -176,12 +183,16 @@ bool NetWorkSystem::initial()
 
 void NetWorkSystem::run()
 {
+
+	
 	event_base_dispatch(m_pEvent_base);
+	
 }
 
 void NetWorkSystem::release()
 {
 	event_base_free(m_pEvent_base);
+	cout << "listeneraddr is: "<<m_pListenevent <<endl;
 	event_free(m_pListenevent);
 	evutil_closesocket(m_nListenfd);
 	for(std::map<evutil_socket_t, TcpHandler *>::iterator mapIter = m_mapTcpHandlers.begin();

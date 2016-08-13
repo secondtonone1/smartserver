@@ -22,6 +22,7 @@ public:
 	{
 		mConnId = conMsgNode.mConnId;
 		mMsgNode = conMsgNode.mMsgNode;
+		return * this;
 	}
 
 	UInt64 mConnId;
@@ -65,7 +66,7 @@ public:
 
 	void insertMsgToList(const ConMsgNode  &msgNode);
 
-	ConMsgNode popMsgFromList();
+	bool popMsgFromList(ConMsgNode & msgNode);
 
 	UInt32 getCount(void) const;
 
@@ -79,20 +80,26 @@ private:
 class NetWorker: public BaseThread
 {
 public:
-	NetWorker(){ m_msgHandler.registerMsgs();}
-	virtual ~ NetWorker(){}
+	NetWorker(){ m_mutexLock = new Mutex();m_msgHandler.registerMsgs();
+	}
+	virtual ~ NetWorker(){
+		if(m_mutexLock)
+		{
+			m_nShutDown = 1;
+		}
+	}
 	virtual void threadWorkFunc();
 
 	void pushNodeInStream(TcpHandler * tcpHandler);
 
-	MsgStream  popMsgFromInStream();
+	bool  popMsgFromInStream(MsgStream &msgstream);
 
 private:
 	MsgStream m_msgInStream;
     MsgStream m_msgOutStream;
 	MsgHandler m_msgHandler;
 
-	Mutex m_mutexLock;
+	BaseLock * m_mutexLock;
 	
 };
 

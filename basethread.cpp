@@ -5,11 +5,13 @@
 #include <process.h>
 unsigned _stdcall threadFunc (void * param)
 {
+	
 	Sleep(1000);
 	assert(param);
 	BaseThread * baseThread = static_cast<BaseThread *>(param);
 	assert(baseThread);
 	baseThread->threadWorkFunc();
+	
 	//cout << "hello world!" <<endl;
 #if defined _WIN32
 	_endthreadex(0);
@@ -22,12 +24,17 @@ unsigned _stdcall threadFunc (void * param)
 #if defined __linux__
 void * threadFunc(void * param)
 {
-	Sleep(1000);
+	//
+	cout <<"begin thread Func" <<endl;	
+	//sleep(1000);
+	cout << param <<endl;
 	assert(param);
 	BaseThread * baseThread = static_cast<BaseThread *>(param);
+	cout << baseThread <<endl;
 	assert(baseThread);
+	cout << "ready to call networkfunc"<<endl;
 	baseThread->threadWorkFunc();
-
+	cout <<"success thread Func" <<endl;
 	return NULL;
 }
 

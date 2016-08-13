@@ -21,7 +21,16 @@ int main(int argc, char **argv)
 {
 	bool initialRes = NetWorkSystem::getSingleton().initial();
 
+
+	
+	if(!initialRes)
+	{
+		return 0;
+	}
+
 	NetWorkSystem::getSingleton().run();
+
+
 
 	NetWorkSystem::getSingleton().release();
 	

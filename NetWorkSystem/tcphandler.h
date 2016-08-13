@@ -2,6 +2,9 @@
 #define _TCPHANDLER_H_
 #include "../structtype.h"
 #include <list>
+#ifdef __linux__
+#include <stdlib.h>
+#endif
 using namespace std;
 //消息队列节点
 class MsgNode
@@ -170,7 +173,7 @@ private:
 	}
 
 private:
-	void tcpRead(UInt32 &inputLen);
+	void tcpRead(size_t &inputLen);
 	void tcpSend(UInt32 msgId, UInt32 msgLen, char * msg);
 	
 	bool insertNode(UInt32 msgId, UInt32 msgLen);

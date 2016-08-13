@@ -8,14 +8,16 @@
 #include <pthread.h>
 #endif
 
+#include <iostream>
+using namespace std;
 //各种类型的锁的基类
 class BaseLock
 {
 public:
 	BaseLock(){}
 	virtual ~BaseLock(){}
-	virtual void lock() const = 0 ;
-	virtual void unlock() const = 0 ;
+	virtual void lock()  = 0 ;
+	virtual void unlock()  = 0 ;
 };
 
 //互斥锁继承基类
@@ -24,8 +26,8 @@ class Mutex :public BaseLock
 public:
 	Mutex();
 	~Mutex();
-	virtual void lock() const;
-	virtual void unlock() const;
+	virtual void lock() ;
+	virtual void unlock() ;
 private:
 #if defined _WIN32
 	HANDLE m_hMutex;
@@ -40,18 +42,18 @@ private:
 class CLock
 {
 public:
-	CLock(const BaseLock & baseLock):m_cBaseLock(baseLock){
+	CLock(  BaseLock *baseLock):m_cBaseLock(baseLock){
 		//构造函数里通过基类锁调用加锁函数(多态)
-		m_cBaseLock.lock();
+		m_cBaseLock->lock();
 	}
 	~CLock(){
 		//析构函数先解锁
-		m_cBaseLock.unlock();
+		m_cBaseLock->unlock();
 	}
 private:
 	//常引用变量，需要在初始化列表初始
 	//多态机制
-	const BaseLock& m_cBaseLock;
+	BaseLock* m_cBaseLock;
 };
 
 

@@ -34,14 +34,14 @@ Mutex::~ Mutex()
 }
 
 //»¥³âËøÉÏËø
-void Mutex::lock() const
+void Mutex::lock() 
 {
 	#if defined _WIN32
 	  DWORD d = WaitForSingleObject(m_hMutex, INFINITE);
 	#endif
 
 	#ifdef __linux__
-		int r = pthread_mutex_lock(&m_Mutex);
+		int r = pthread_mutex_lock(&m_hMutex);
 		if(r != 0)
 		{
 			cout << "linux lock failed!!!"<<endl;
@@ -51,14 +51,14 @@ void Mutex::lock() const
 }
 
 //»¥³âËø½âËø
-void Mutex::unlock() const
+void Mutex::unlock() 
 {
 	#if defined _WIN32
 	  ::ReleaseMutex(m_hMutex);
 	#endif
 
 #ifdef __linux__
-	  ret = pthread_mutex_unlock(&tMutex);
+	  int ret = pthread_mutex_unlock(&m_hMutex);
 	  if(ret != 0)
 	  {
 		  cout << "Linux unlock failed!!!" <<endl;

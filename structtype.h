@@ -21,8 +21,9 @@
 #include "./Include/libevent/event2/listener.h"
 #include "./Include/libevent/event2/util.h"
 #include "./Include/libevent/event2/event.h"
-
+#if defined _WIN32
 #include <WinSock2.h>
+#endif
 #include <string.h>
 #include <iostream>
 using namespace std;
